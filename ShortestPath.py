@@ -1,101 +1,44 @@
-import tkinter as tk
-import copy
+import sys
+from heapq import heapify, heappush, heappop
 
-window = tk.Tk()
-canvas = tk.Canvas(window, width=800, height=600, bg="#ffffff")
-canvas.pack()
+def dijsktra(graph, src, dest):
+    inf = sys.maxsize
+    node_data = {'A':{'cost':inf,'pred':[]},
+    'B':{'cost':inf,'pred':[]},
+    'C':{'cost':inf,'pred':[]},
+    'D':{'cost':inf,'pred':[]},
+    'E':{'cost':inf,'pred':[]},
+    'F':{'cost':inf,'pred':[]}
+    }
+    node_data[src]['cost'] = 0
+    visited = []
+    temp = src
+    for i in range(5):
+        if temp not in visited:
+            visited.append(temp)
+            min_heap = []
+            for j in graph(temp):
+                if j not in visited:
+                    cost = node_data[temp]['cost'] + graph[temp][j]
+                    if cost < node_data[j]['cost']:
+                        node_data[j]['cost'] = cost
+                        node_data[j]['pred'] = node_data[temp]['pred'] + list(temp)
+                    heappush(min_heap, (node_data[j]['cost'], j))
+        heapify(min_heap)
+        temp = min_heap[0][1]
+    print("Shortest Distance from ", str(node_data[dest]['cost']))
+    print("Shortest Path: ", str(node_data[dest]['pred'] + list(dest)))
 
-def inputTitik(n):
-    setOfVertex = []
-    for noUrut in range(n):
-        titik = input()
-        x = int(titik.split(' ')[0])
-        y = int(titik.split(' ')[1])
-        canvas.create_oval(x-10, y+10, x+10, y-10, fill='blue')
-        canvas.create_text(x, y-15, text=noUrut, font=7)
-        setOfVertex.append([x, y])
+if __name__ == '__main__':
+    graph = {
+        'A' :{'B':2, 'C':4},
+        'B' :{'A':2, 'C':3, 'D':8},
+        'C' :{'A':4, 'B':3, 'E':5, 'D':2},
+        'D' :{'B':8, 'C':2, 'E':11, 'F':22},
+        'E' :{'C':5, 'D':11, 'F':1},
+        'F' :{'D':22, 'E':1}
+    }
 
-    return setOfVertex
-
-def inputStartTarget(vertices):
-    target = input()
-    start = int(target.split(' ')[0])
-    end = int(target.split(' ')[1])
-
-    return[vertices[start], vertices[end]]
-
-def ConnectEdge(Vertices):
-    edges = []
-    n = int(input())
-    for x in range(n):
-        edgeInput = input()
-        v1 = int(edgeInput.split(' ')[0])
-        v2 = int(edgeInput.split(' ')[1])
-        weight = int(edgeInput.split(' ')[2])
-
-        edges.append([Vertices[v1], Vertices[v2], weight])
-        canvas.create_line(Vertices[1], Vertices[2])
-        canvas.create_text((Vertices[v1][0] + Vertices[v2][0]) / 2 , (Vertices[v1][1] + Vertices[v2][1]) / 2, text=weight, font=7) 
-
-    return edges
-
-def findNeighbor(edges, CurrentPosition, visitedVertex):
-    commonNeighbor = []
-    setOfEdge = copy.deepcopy(edges)
-    visited = copy.deepcopy(visitedVertex)
-    for edge in setOfEdge:
-        if (CurrentPosition == edge[0] or CurrentPosition == edge[1]):
-            edge.remove(CurrentPosition)
-            if edge[0] not in visited:
-                commonNeighbor.append(edge[0])
-    return commonNeighbor
-
-def SumColumn(list2d, extractedColumn):
-    value = []
-    for edge in list2d:
-        value.append(edge[extractedColumn])
-    return sum(value)
-
-def findShortestPath(setOfPath):
-    eachPath = []
-    for x in setOfPath:
-        eachPath.append(SumColumn(x, 2))
-    minPath = min(eachPath)
-
-    return setOfPath[eachPath.index(minPath)]
-
-def Path(edges, CurrentPosition, TargetVertex, walk=[], VisitedVertex=[]):
-    NeighborVertex = findNeighbor(edges, CurrentPosition, VisitedVertex)
-    if len(NeighborVertex) == 0:
-        return None
-    
-    for neighbor in NeighborVertex:
-        if neighbor[0] == TargetVertex:
-            walk.append([CurrentPosition, neighbor[0], neighbor[1]])
-            path.append(copy.deepcopy(walk))
-            walk.pop()
-            return None
-        
-        else: 
-            VisitedVertex.append(CurrentPosition)
-            walk.append([CurrentPosition, neighbor[0], neighbor[1]])
-
-            Path(edges, neighbor[0], TargetVertex, walk, VisitedVertex)
-            VisitedVertex.pop()
-            walk.pop()
-
-nVertex = int(input())
-vertices = inputTitik(nVertex)
-edges = ConnectEdge(vertices)
-
-startVertex, targetVertex = inputStartTarget(vertices)
-
-path = []
-Path(edges, startVertex, targetVertex)
-
-findShortestPath = findShortestPath(path)
-print(findShortestPath)
-
-for edge in findShortestPath:
-    canvas.create_line(edge[0], edge[1], fill='red', width=3)
-window.mainloop()
+    source = 'A'
+    destination = 'F'
+    dijsktra(graph, source, destination)
