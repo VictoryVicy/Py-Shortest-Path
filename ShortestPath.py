@@ -17,7 +17,7 @@ def dijsktra(graph, src, dest):
         if temp not in visited:
             visited.append(temp)
             min_heap = []
-            for j in graph(temp):
+            for j in graph[temp]:
                 if j not in visited:
                     cost = node_data[temp]['cost'] + graph[temp][j]
                     if cost < node_data[j]['cost']:
@@ -32,10 +32,10 @@ def dijsktra(graph, src, dest):
 if __name__ == '__main__':
     graph = {
         'A' :{'B':2, 'C':4},
-        'B' :{'A':2, 'C':3, 'D':8},
-        'C' :{'A':4, 'B':3, 'E':5, 'D':2},
-        'D' :{'B':8, 'C':2, 'E':11, 'F':22},
-        'E' :{'C':5, 'D':11, 'F':1},
+        'B' :{'A':6, 'C':5, 'D':3},
+        'C' :{'A':17, 'B':3, 'E':6, 'D':4},
+        'D' :{'B':4, 'C':9, 'E':30, 'F':16},
+        'E' :{'C':1, 'D':22, 'F':5},
         'F' :{'D':22, 'E':1}
     }
 
